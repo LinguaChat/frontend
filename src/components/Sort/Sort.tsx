@@ -10,13 +10,11 @@ import { Button } from '../UI/Button/Button';
 import { Country, Language, SkillLevelEnum } from '../../utils/openapi';
 
 interface Filters {
-  country: string;
-  languages: {
-    language: string;
-    skill_level: string;
-  }[];
-  gender: string | null;
   age: string;
+  country: string;
+  gender: string | null;
+  languages: string;
+  skill_level: string;
 }
 
 interface SortProps {
@@ -55,24 +53,29 @@ const Sort: React.FC<SortProps> = ({ onChangeSort, isOpen }) => {
 
   const handleFindButtonClick = () => {
     const ageRange = `${leftValue},${rightValue}`;
+
     const languageFilters = selectedLanguagesAndLevels
       .filter((item) => item.language !== null && item.skillLevels.length > 0)
       .map((item) => ({
-        language: item.language!.name,
-        skill_level: item.skillLevels.join(','),
+        language: item.language!.isocode,
+        skill_level: item.skillLevels[0],
       }));
+
     const countryCodes = selectedCountries
-      .filter((country) => country.code !== null)
-      .map((country) => country.code!.toUpperCase())
+      .filter((country) => country.name !== null)
+      .map((country) => country.name!)
       .join(',');
+
     const filters: Filters = {
       age: ageRange,
       country: countryCodes,
       gender: selectedGender || null,
-      languages: languageFilters,
+      languages: languageFilters.map((lf) => lf.language).join(','),
+      skill_level: languageFilters.map((lf) => lf.skill_level).join(','),
     };
     onChangeSort(filters);
   };
+
   return (
     <div className={isOpen ? styles.popup__sort : styles.popup__sort_hidden}>
       <div className={styles.popup__cantry}>
