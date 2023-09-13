@@ -11,10 +11,8 @@ import { Country, Language, SkillLevelEnum } from '../../utils/openapi';
 
 interface Filters {
   country: string;
-  languages: {
-    language: string;
-    skill_level: string;
-  }[];
+  languages: string;
+  skill_level: string;
   gender: string | null;
   age: string;
 }
