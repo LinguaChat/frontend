@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FC } from 'react';
+import React, { useState } from 'react';
 import styles from './QuestionBlock.module.scss';
 import IQuestion from '../../types/types';
 import arrow from '../../images/arrow.png';

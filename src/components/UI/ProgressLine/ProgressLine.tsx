@@ -1,8 +1,12 @@
 import styles from './ProgressLine.module.scss';
 import cn from 'classnames';
 
-const ProgressLine = ({ pageNumber }) => {
-  const numbers: any = [1, 2, 3, 4, 5];
+interface IProgressLine {
+  pageNumber: number;
+}
+
+const ProgressLine = ({ pageNumber }: IProgressLine) => {
+  const numbers: number[] = [1, 2, 3, 4, 5, 6];
 
   return (
     <ul className={styles.lines}>
@@ -11,8 +15,8 @@ const ProgressLine = ({ pageNumber }) => {
           key={i}
           className={cn(
             styles.lines__line,
-            pageNumber === i + 1 ? styles.lines__line_active : '',
-            pageNumber > i + 1 ? styles.lines__line_visited : '',
+            pageNumber === number ? styles.lines__line_active : '',
+            pageNumber > number ? styles.lines__line_visited : '',
           )}
         ></li>
       ))}

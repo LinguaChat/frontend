@@ -5,10 +5,15 @@ import { avatarList } from './AvatarsIcons';
 import styles from './Avatars.module.scss';
 import cn from 'classnames';
 
-const Avatars = ({ selectedAvatar, setSelectedAvatar }) => {
+interface AvatarProps {
+  selectedAvatar: string;
+  setSelectedAvatar: (selectedAvatar: string) => void;
+}
+
+const Avatars = ({ selectedAvatar, setSelectedAvatar }: AvatarProps) => {
   const handleSetAvatar = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setSelectedAvatar(event.target.src);
-    console.log(event.target.src);
+    const target = event.target as HTMLImageElement;
+    setSelectedAvatar(target.src);
   };
 
   return (
@@ -25,6 +30,7 @@ const Avatars = ({ selectedAvatar, setSelectedAvatar }) => {
                     : '',
                 )}
                 onClick={handleSetAvatar}
+                key={i}
               >
                 <img src={avatar} alt='Вариант изображения аватара' />
               </button>

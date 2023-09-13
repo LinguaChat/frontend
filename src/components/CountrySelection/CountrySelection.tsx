@@ -1,25 +1,32 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
+import { FC, useEffect, useState } from 'react';
+
 import { Button } from '../UI/Button/Button';
+import { Input } from '../UI/Input/Input';
+
 import { Country } from '../../utils/openapi';
-import styles from '../CountrySelection/CountrySelection.module.scss';
+import { api } from '../../utils/constants';
+
+import styles from './CountrySelection.module.scss';
+import classNames from 'classnames';
 
 interface CountrySelectionProps {
-  countriesData: Country[];
-  onSelectedCountriesChange: (selectedCountries: Country[]) => void;
-  onSortCountry: (country: Country) => void;
+  pageName: string;
+  selectedCountries: Country[];
+  setSelectedCountries: (selectedCountries: Country[]) => void;
+  onClearFilter?: () => void;
 }
 
-const CountrySelection: React.FC<CountrySelectionProps> = ({
-  countriesData,
-  onSelectedCountriesChange,
-  onSortCountry,
+const CountrySelection: FC<CountrySelectionProps> = ({
+  pageName,
+  selectedCountries,
+  setSelectedCountries,
+  onClearFilter,
 }) => {
+  const [countriesData, setCountriesData] = useState<Country[]>([]);
   const [isCountryListVisible, setCountryListVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
   const [filteredCountries, setFilteredCountries] =
     useState<Country[]>(countriesData);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
@@ -31,20 +38,45 @@ const CountrySelection: React.FC<CountrySelectionProps> = ({
     null,
   );
 
+  const fetchCountriesData = async () => {
+    try {
+      console.log('отправка запроса ---');
+      const response = await api.api.countriesList();
+      console.log('ответ получен -', response);
+      const countries = response.data.map((country) => ({
+        code: country.code,
+        name: country.name,
+        flag_icon: country.flag_icon,
+      }));
+      setCountriesData(countries);
+    } catch (error) {
+      console.error('Ошибка при получении данных о странах:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCountriesData();
+  }, []);
+
+  const i = pageName === 'Sort' ? 5 : 1;
+
   const handleSelectCountry = (country: Country) => {
-    if (selectedCountry && !selectedCountries.includes(country)) {
+    if (selectedCountries.length < i && !selectedCountries.includes(country)) {
       const updatedSelectedCountries = [...selectedCountries, country];
       setSelectedCountries(updatedSelectedCountries);
       setSelectedCountry(country);
       setCountryListVisible(false);
-      setSearchValue('');
-      onSortCountry(country);
-      onSelectedCountriesChange(updatedSelectedCountries);
+
+      pageName === 'FillOutProfile2'
+        ? setSearchValue(country.name)
+        : setSearchValue('');
+
+      // onSortCountry(country);
     }
   };
 
-  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSearchValue = e.target.value;
+  const handleSearchInputChange = (e: any) => {
+    const newSearchValue = e.value;
     setSearchValue(newSearchValue);
     if (newSearchValue) {
       setCountryListVisible(true);
@@ -214,35 +246,37 @@ const CountrySelection: React.FC<CountrySelectionProps> = ({
   };
 
   return (
-    <div className={styles.cantry}>
-      <input
-        type='text'
-        id='searchInput'
-        placeholder='Начните вводить название'
-        value={searchValue}
-        onChange={handleSearchInputChange}
-        onKeyDown={handleKeyDown}
-        className={`${styles.cantry__input} ${
-          isCountryListVisible ? styles.cantry__input_showSuggestions : ''
+    <div className={styles.country}>
+      <Input
+        className={`${styles.country__input} ${
+          isCountryListVisible ? styles.country__input_showSuggestions : ''
         }`}
+        type='search'
+        name='country'
+        value={searchValue}
+        fontSize={pageName === 'FillOutProfile2' ? '16' : '14'}
+        isLabelHintHidden={true}
+        placeholder='Начните вводить название'
+        onValue={(event) => handleSearchInputChange(event)}
+        onKeyDown={handleKeyDown}
       />
       {isError && (
-        <span className={styles.cantry__input_error}>{errorMessage}</span>
+        <span className={styles.country__input_error}>{errorMessage}</span>
       )}
-      <div className={styles.cantry__selectedCountries}>
+      <div className={styles.country__selectedCountries}>
         {selectedCountries.map((country) => (
-          <div key={country.code} className={styles.cantry__selectCountry}>
-            <span className={styles.cantry__countryName}>{country.name}</span>
+          <div key={country.code} className={styles.country__selectCountry}>
+            <span className={styles.country__countryName}>{country.name}</span>
             <Button
-              className={styles.cantry__removeButton}
+              className={styles.country__removeButton}
               onClick={() => handleRemoveCountry(country)}
             />
           </div>
         ))}
         {isCountryListVisible && (
           <div
-            className={classNames(styles.cantry__countryList, {
-              [styles.cantry__countryList_visible]:
+            className={classNames(styles.country__countryList, {
+              [styles.country__countryList_visible]:
                 sortCountriesByLastLetter().length > 0,
             })}
             onKeyDown={handleDropdownKeyDown}
@@ -256,7 +290,7 @@ const CountrySelection: React.FC<CountrySelectionProps> = ({
                       country.name.toLocaleLowerCase('ru'),
                     )
                   }
-                  className={classNames(styles.cantry__countryList_option, {
+                  className={classNames(styles.country__countryList_option, {
                     [styles.selected]: selectedCountry?.code === country.code,
                     [styles.suggested]: suggestedCountries.includes(country),
                   })}
@@ -264,7 +298,7 @@ const CountrySelection: React.FC<CountrySelectionProps> = ({
                   <img
                     src={country.flag_icon}
                     alt={`${country.name} Flag`}
-                    className={styles.cantry__countryList_flagImage}
+                    className={styles.country__countryList_flagImage}
                   />
                   {country.name}
                 </div>

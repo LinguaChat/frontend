@@ -1,10 +1,12 @@
-import SignupSigninForm from '../../components/SignupSigninForm/SignupSigninForm';
+import { Link } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
-import styles from './SignupSigninPage.module.scss';
+import SignupSigninForm from '../../components/SignupSigninForm/SignupSigninForm';
+import PicturesBlock from '../../components/PicturesBlock/PicturesBlock';
 
 import logo from '../../images/svg/logo.svg';
-import PicturesBlock from '../../components/PicturesBlock/PicturesBlock';
-import { Link } from 'react-router-dom';
+
+import styles from './SignupSigninPage.module.scss';
 
 const SignupSigninPage = () => {
   return (
@@ -18,7 +20,9 @@ const SignupSigninPage = () => {
               alt='Логотип проекта'
             />
           </Link>
-          <SignupSigninForm />
+          <div className={styles.content__formArea}>
+            <SignupSigninForm />
+          </div>
         </div>
         <div className={styles.content__picturesContainer}>
           <PicturesBlock />
@@ -28,4 +32,4 @@ const SignupSigninPage = () => {
   );
 };
 
-export default SignupSigninPage;
+export default observer(SignupSigninPage);

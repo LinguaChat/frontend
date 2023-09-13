@@ -1,60 +1,48 @@
 import { FC } from 'react';
 
-import LanguagesTag from '../UI/LanguagesTag/LanguagesTag';
-
-import {
-  сardRandomMaleAvatar,
-  сardRandomFemaleAvatar,
-} from './CardRandomAvatar';
-import arrows from '../../images/svg/card-arrows-parallel.svg';
-
 import CountryIcon from '../UI/CountryIcon/CountryIcon';
 import UserStatusIsOnline from '../UI/UserStatusIsOnline/UserStatusIsOnline';
 import GenderAndAgeIcon from '../UI/GenderAndAgeIcon/GenderAndAgeIcon';
+import LanguagesTag from '../UI/LanguagesTag/LanguagesTag';
+
+import arrows from '../../images/svg/card-arrows-parallel.svg';
+
 import {
+  UserLanguage,
   Country,
-  UserNativeLanguage,
-  UserForeignLanguage,
+  GenderEnum,
+  NullEnum,
 } from '../../utils/openapi';
 
 import styles from './Card.module.scss';
-import cn from 'classnames';
 
 interface ICards {
-  country?: Country | null;
+  first_name: string;
+  avatar: string;
+  age: string;
+  country: Country;
+  languages: UserLanguage[];
+  gender: GenderEnum | NullEnum | null;
+  about: string;
   is_online: boolean;
-  avatar?: string;
-  first_name?: string;
-  gender?: string;
   gender_is_hidden: boolean;
-  age?: string;
   age_is_hidden?: boolean;
-  about?: string;
-  languages?: any;
 }
 
 const Card: FC<ICards> = ({
-  country = null,
-  avatar,
   first_name,
-  gender,
-  gender_is_hidden,
+  avatar,
   age,
-  age_is_hidden,
+  country,
+  languages,
+  gender,
   about,
   is_online,
-  languages,
-}) => {
-  const getUserAvatar = () => {
-    return avatar
-      ? avatar
-      : gender === 'Male'
-      ? сardRandomMaleAvatar()
-      : сardRandomFemaleAvatar();
-  };
-
+  gender_is_hidden,
+  age_is_hidden,
+}: ICards) => {
   return (
-    <article className={cn(styles.card)}>
+    <article className={styles.card}>
       <div className={styles.card__countryAndStatusTag}>
         <CountryIcon country={country} />
         <UserStatusIsOnline is_online={is_online} />
@@ -62,7 +50,7 @@ const Card: FC<ICards> = ({
       <div className={styles.card__partnerAbout}>
         <img
           className={styles.card__partnerAvatar}
-          src={`${getUserAvatar()}`}
+          src={avatar}
           alt='Аватар пользователя'
         />
         <div className={styles.card__partnerInfo}>
@@ -80,7 +68,7 @@ const Card: FC<ICards> = ({
               <div className={styles.card__partnerPersonalInfo_languages}>
                 <ul className={styles.languages}>
                   {languages &&
-                    languages.map((languages: UserForeignLanguage) => {
+                    languages.map((languages: UserLanguage) => {
                       return (
                         languages.skill_level === 'Native' && (
                           <LanguagesTag
@@ -100,7 +88,7 @@ const Card: FC<ICards> = ({
               <div className={styles.card__partnerPersonalInfo_languages}>
                 <ul className={styles.languages}>
                   {languages &&
-                    languages.map((languages: UserForeignLanguage) => {
+                    languages.map((languages: UserLanguage) => {
                       return (
                         languages.skill_level !== 'Native' && (
                           <LanguagesTag

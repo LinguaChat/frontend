@@ -1,7 +1,9 @@
 import { FC } from 'react';
-import styles from './UserStatusIsOnline.module.scss';
+
 import logInIndicator from '../../../images/svg/card-indicator-logIn.svg';
 import logOutIndicator from '../../../images/svg/card-indicator-logOut.svg';
+
+import styles from './UserStatusIsOnline.module.scss';
 
 interface IUserStatusIsOnline {
   is_online: boolean;

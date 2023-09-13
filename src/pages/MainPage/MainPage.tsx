@@ -12,21 +12,13 @@ import Sort from '../../components/Sort/Sort';
 import Footer from '../../components/Footer/Footer';
 
 import MoreCards from '../../components/MoreCards/MoreCards';
-import Modal from '../../components/Modal/Modal';
 
 import styles from './MainPage.module.scss';
 import cn from 'classnames';
 
-import { useModel } from '../../components/SignupSigninForm/model';
 import { loggedIn } from '../../models/LoggedIn';
 
 const MainPage = () => {
-  const model = useModel();
-
-  const handleCloseModal = () => {
-    model.isModalOpen = false;
-  };
-
   useEffect(() => {
     console.log(`main_loggedIn: ${loggedIn.loggedIn}`);
   }, []);
@@ -36,21 +28,25 @@ const MainPage = () => {
   const [isUsersList, setIsUsersList] = useState(false);
   const [category, setCategory] = useState({ name: 'Все', path: '' });
   const [sortType, setSortType] = useState({});
+  const [filters, setFilters] = useState<any>({});
   const [isSortPopupOpen, setSortPopupOpen] = useState(false);
-  const [languagesData, setLanguagesData] = useState<Language[]>([]);
-  const [countriesData, setCountriesData] = useState<Country[]>([]);
 
   const handleOpenSortPopup = () => {
     setSortPopupOpen(!isSortPopupOpen);
   };
 
-  const getUsersList = async (filters: any) => {
+  const getUsersList = async () => {
     try {
       console.log('отправка запроса ---');
-      const response = await api.api.usersList({
-        ordering: `${category.path}`,
-        ...filters,
-      });
+      const params = {
+        ordering: category.path,
+        age: filters.age,
+        country: filters.country,
+        gender: filters.gender,
+        languages: filters.languages,
+        skill_level: filters.skill_level,
+      };
+      const response = await api.api.usersList(params);
       console.log('ответ получен -', response);
       setIsUsersList(true);
 
@@ -65,46 +61,8 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    getUsersList(sortType);
-  }, [category, sortType]);
-
-  //Запрос массива языков
-  const fetchLanguagesData = async () => {
-    try {
-      console.log('отправка запроса ---');
-      const response = await api.api.languagesList();
-      console.log('ответ получен -', response);
-      const languages = response.data;
-      setLanguagesData(languages);
-    } catch (error) {
-      console.error('Ошибка при получении данных о языках:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLanguagesData();
-  }, []);
-
-  //Запрос страны
-  const fetchCountriesData = async () => {
-    try {
-      console.log('отправка запроса ---');
-      const response = await api.api.countriesList();
-      console.log('ответ получен -', response);
-      const countries = response.data.map((country) => ({
-        code: country.code,
-        name: country.name,
-        flag_icon: country.flag_icon,
-      }));
-      setCountriesData(countries);
-    } catch (error) {
-      console.error('Ошибка при получении данных о странах:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCountriesData();
-  }, []);
+    getUsersList();
+  }, [category, filters]);
 
   return (
     <>
@@ -157,27 +115,8 @@ const MainPage = () => {
               setCardsListLength={setCardsListLength}
             />
           </div>
-          <Sort
-            value={sortType}
-            onChangeSort={setSortType}
-            isOpen={isSortPopupOpen}
-            languagesData={languagesData}
-            countriesData={countriesData}
-          />
+          <Sort onChangeSort={setFilters} isOpen={isSortPopupOpen} />
         </div>
-
-        <Modal isOpen={model.isModalOpen} onClose={handleCloseModal}>
-          <h2 className={styles.modal_header}>
-            Подтвердите адрес электронной почты
-          </h2>
-          <p className={styles.modal_text_main}>
-            Пожалуйста, проверьте электронную почту, которую указали при
-            регистрации, и перейдите по ссылке для подтверждения
-          </p>
-          <p className={styles.modal_text_additional}>
-            Ссылка будет активна в течении 24 часов
-          </p>
-        </Modal>
       </main>
       <Footer />
     </>

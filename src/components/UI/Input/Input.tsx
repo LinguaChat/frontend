@@ -1,14 +1,12 @@
 import type { ChangeEvent, InputHTMLAttributes } from 'react';
 
-import search from '../../../images/svg/search.svg';
-
 import styles from './Input.module.scss';
 import cn from 'classnames';
 
 export interface InputProps<T extends string>
   extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
-  onValue: ({ value, name }: { value: string; name: T }) => void;
+  onValue?: (event: { value: string; name: T }) => void;
   value: string;
   name: T;
   label?: string;
@@ -16,9 +14,10 @@ export interface InputProps<T extends string>
   labelHint?: string;
   isLabelHintHidden?: boolean;
   type: string;
-  placeholder: string;
+  fontSize?: '14' | '16';
+  placeholder?: string;
   hint?: string;
-  required: boolean;
+  required?: boolean;
   hasError?: boolean;
   error?: string;
 }
@@ -33,6 +32,7 @@ export const Input = <T extends string>({
   labelHint,
   isLabelHintHidden,
   type,
+  fontSize = '14',
   placeholder,
   hint,
   required,
@@ -42,8 +42,9 @@ export const Input = <T extends string>({
 }: InputProps<T>) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.currentTarget;
-    onValue({ value, name: name as T });
-    console.log(event.currentTarget.validationMessage);
+    if (onValue) {
+      onValue({ value, name: name as T });
+    }
   };
 
   return label ? (
@@ -72,6 +73,7 @@ export const Input = <T extends string>({
             [styles.inputElement__input_searchInput]: type === 'search',
             [styles.inputElement__input_dateInput]: type === 'date',
           },
+          styles[`fontSize-${fontSize}`],
           className,
         )}
         name={name}
@@ -82,16 +84,6 @@ export const Input = <T extends string>({
         onChange={handleChange}
         {...rest}
       />
-      {type === 'search' && (
-        <img
-          className={cn(
-            styles.inputElement__searchIcon,
-            styles.inputElement__searchIcon_withLabel,
-          )}
-          src={search}
-          alt='Иконка поиска - лупа'
-        />
-      )}
       {hasError ? (
         <span className={styles.inputElement__error}>{error}</span>
       ) : (
@@ -108,6 +100,7 @@ export const Input = <T extends string>({
             [styles.inputElement__input_searchInput]: type === 'search',
             [styles.inputElement__input_dateInput]: type === 'date',
           },
+          styles[`fontSize-${fontSize}`],
           className,
         )}
         name={name}
@@ -118,16 +111,6 @@ export const Input = <T extends string>({
         onChange={handleChange}
         {...rest}
       />
-      {type === 'search' && (
-        <img
-          className={cn(
-            styles.inputElement__searchIcon,
-            styles.inputElement__searchIcon_withoutLabel,
-          )}
-          src={search}
-          alt='Иконка поиска - лупа'
-        />
-      )}
       {hasError ? (
         <span className={styles.inputElement__error}>{error}</span>
       ) : (

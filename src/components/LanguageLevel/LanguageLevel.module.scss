@@ -1,7 +1,7 @@
 @import 'src/vendor/_mixins.scss';
 
 .language {
-  position: relative; 
+  position: relative;
 
   &__items {
     -webkit-appearance: none;
@@ -23,14 +23,19 @@
     padding: 8px 12px;
     display: flex;
     position: relative;
+    margin-left: 20px;
+
+    &_16 {
+      font-size: 16px;
+    }
 
     //Полоска прокрутки
     &::-webkit-scrollbar {
       width: .75em;
     }
-  
+
     &::-webkit-scrollbar-track {
-      background-color: var(--white, #FFF);      
+      background-color: var(--white, #FFF);
     }
 
     &::-webkit-scrollbar-thumb {
@@ -50,13 +55,13 @@
     border-color: var(--dark-violet, #403A6D);
     border: 1px solid var(--dark-violet, #403A6D);
     color: var(--dark-violet, #403A6D);
-    background: 
+    background:
       linear-gradient(to right, var(--white, #FFF) 0%, var(--white, #FFF) calc(100% - 16px), transparent calc(100% - 16px), transparent 100%),
       url('../../images/svg/Arrow/arrow-up.svg') no-repeat;
     background-size: 16px 16px, auto;
     background-position: calc(100% - 12px) 50%;
   }
-  
+
   &__items:disabled {
     border-radius: 20px;
     background: var(--grey-gradient-50, #F0F2F4);
@@ -82,9 +87,9 @@
     z-index: 1000;
 
     &::-webkit-scrollbar {
-      width: .75em;        
+      width: .75em;
     }
-   
+
     &::-webkit-scrollbar-track {
       background-color: var(--white, #FFF);
       margin-block: .5em;
@@ -108,21 +113,20 @@
       border: none;
       background-color: var(--white, #FFF);
     }
-  }  
+  }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 .language__level {
   width: 336px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 20px 34px;
 
   &_label {
     padding-bottom: 10px;
     font-size: 14px;
-    
+
     &:disabled {
       border: none;
       background: var(--grey-gradient-50, #F0F2F4);
@@ -131,7 +135,6 @@
 
   }
 
-  
   &_input {
     appearance: none;
     position: absolute;
@@ -139,6 +142,10 @@
     height: 1px;
     overflow: hidden;
     clip: rect(0 0 0 0);
+
+    &_hidden {
+      display: none;
+    }
 
     & + .language__level_checkbox_visible::before {
       content: '';
@@ -155,7 +162,7 @@
     }
 
     &:checked + .language__level_checkbox_visible::before {
-      background-image: url(../../images/svg/Arrow/CheckBoxBlur.svg);
+      background-image: url('../../images/svg/Arrow/CheckBoxBlur.svg');
       z-index: 5;
       position: absolute;
       top: -1.5px;
@@ -163,12 +170,12 @@
     }
 
     &:checked + .language__level_checkbox_visible::before:active:disabled {
-      background-image: url(../../images/svg/Arrow/CheckBoxGreen.svg);
+      background-image: url('../../images/svg/Arrow/CheckBoxGreen.svg');
     }
   }
 
   .language__level_checkbox_visible {
-    display: inline-block; 
+    display: inline-block;
     vertical-align: middle;
     width: 16px;
     height: 16px;
@@ -194,5 +201,5 @@
 
   }
 
-  
+
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, SelectHTMLAttributes } from 'react';
+import { ReactNode, SelectHTMLAttributes } from 'react';
 
 import styles from './Select.module.scss';
 import cn from 'classnames';

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../LanguageLevel/LanguageLevel.module.scss';
+
 import { Language, SkillLevelEnum } from '../../utils/openapi';
+
+import styles from './LanguageLevel.module.scss';
+import cn from 'classnames';
 
 const skillLevelNames: Record<SkillLevelEnum, string> = {
   [SkillLevelEnum.Newbie]: 'Новичок',
@@ -11,7 +14,8 @@ const skillLevelNames: Record<SkillLevelEnum, string> = {
   [SkillLevelEnum.Native]: 'Носитель',
 };
 
-interface LanguagelevelProps {
+interface LanguageLevelProps {
+  pageName: string;
   languages: Language[];
   selectedLanguage: Language | null;
   selectedSkillLevels: SkillLevelEnum[];
@@ -25,7 +29,8 @@ interface LanguagelevelProps {
   };
 }
 
-const Languagelevel: React.FC<LanguagelevelProps> = ({
+const LanguageLevel: React.FC<LanguageLevelProps> = ({
+  pageName,
   languages,
   selectedLanguage,
   selectedSkillLevels,
@@ -154,7 +159,12 @@ const Languagelevel: React.FC<LanguagelevelProps> = ({
       <div className={styles.language}>
         <input
           type='text'
-          className={styles.language__items}
+          className={cn(
+            styles.language__items,
+            pageName === 'FillOutProfile2' || pageName === 'FillOutProfile3'
+              ? styles.language__items_16
+              : '',
+          )}
           value={selectedLanguage ? selectedLanguage.name : inputValue}
           placeholder='Напишите или выберете'
           onClick={() => setIsOpen(!isOpen)}
@@ -182,28 +192,36 @@ const Languagelevel: React.FC<LanguagelevelProps> = ({
         )}
       </div>
       <div className={styles.language__level}>
-        {Object.entries(skillLevelNames).map(([key, level]) => (
-          <label key={level} className={styles.language__level_label}>
-            <input
-              type='checkbox'
-              value={level}
-              checked={selectedSkillLevels.includes(key as SkillLevelEnum)}
-              onChange={() => handleSkillLevelChange(key as SkillLevelEnum)}
-              className={styles.language__level_input}
-              disabled={
-                (key === SkillLevelEnum.Native &&
-                  selectedSkillLevels.length > 0) ||
-                (key !== SkillLevelEnum.Native &&
-                  selectedSkillLevels.includes(SkillLevelEnum.Native))
-              }
-            />
-            <span className={styles.language__level_checkbox_visible}></span>
-            {level}
-          </label>
-        ))}
+        {(pageName === 'Sort' || pageName === 'FillOutProfile3') &&
+          Object.entries(skillLevelNames).map(([key, level]) => (
+            <label key={level} className={styles.language__level_label}>
+              <input
+                type='checkbox'
+                value={level}
+                checked={selectedSkillLevels.includes(key as SkillLevelEnum)}
+                onChange={() => handleSkillLevelChange(key as SkillLevelEnum)}
+                className={
+                  pageName === 'FillOutProfile3' &&
+                  key === SkillLevelEnum.Native
+                    ? styles.language__level_input_hidden
+                    : styles.language__level_input
+                }
+                disabled={
+                  pageName === 'Sort'
+                    ? (key === SkillLevelEnum.Native &&
+                        selectedSkillLevels.length > 0) ||
+                      (key !== SkillLevelEnum.Native &&
+                        selectedSkillLevels.includes(SkillLevelEnum.Native))
+                    : selectedSkillLevels.includes(key as SkillLevelEnum)
+                }
+              />
+              <span className={styles.language__level_checkbox_visible}></span>
+              {level}
+            </label>
+          ))}
       </div>
     </>
   );
 };
 
-export default Languagelevel;
+export default LanguageLevel;

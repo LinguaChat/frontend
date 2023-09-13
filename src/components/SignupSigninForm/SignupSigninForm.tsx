@@ -1,30 +1,24 @@
-import { useEffect, useState } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
 import { Input } from '../UI/Input/Input';
 import { Button } from '../UI/Button/Button';
+import { loggedIn } from '../../models/LoggedIn';
+
+import { useModel } from './model';
 
 import styles from './SignupSigninForm.module.scss';
-import { useModel } from './model';
 import cn from 'classnames';
-import { loggedIn } from '../../models/LoggedIn';
 
 const SignupSigninForm = () => {
   const model = useModel();
-  const navigate = useNavigate();
 
   const location = useLocation();
   const pathName: string = location.pathname;
 
-  const [isSignUp, setSignUp] = useState(true);
-
-  const checkIsSignUp = () => {
-    pathName === '/signup' ? setSignUp(true) : setSignUp(false);
-  };
-
   useEffect(() => {
-    checkIsSignUp();
+    model.checkIsSignUp();
   }, [pathName]);
 
   useEffect(() => {
@@ -39,15 +33,15 @@ const SignupSigninForm = () => {
   return (
     <form
       className={styles.form}
-      onSubmit={isSignUp ? model.handleRegister : model.handleLogin}
+      onSubmit={model.isSignUp ? model.handleRegister : model.handleLogin}
     >
-      <ul className={styles.form_links}>
+      <ul className={styles.form__links}>
         <Link
           to={`/signin`}
           className={
-            !isSignUp
-              ? styles.form_links_activeLinkItem
-              : styles.form_links_linkItem
+            !model.isSignUp
+              ? styles.form__links_activeLinkItem
+              : styles.form__links_linkItem
           }
         >
           Вход
@@ -55,64 +49,67 @@ const SignupSigninForm = () => {
         <Link
           to={`/signup`}
           className={
-            isSignUp
-              ? styles.form_links_activeLinkItem
-              : styles.form_links_linkItem
+            model.isSignUp
+              ? styles.form__links_activeLinkItem
+              : styles.form__links_linkItem
           }
         >
           Регистрация
         </Link>
       </ul>
-      {isSignUp && (
+      {model.isSignUp && (
         <Input
-          className={styles.form_input}
+          className={styles.form__input}
           type='text'
           name='username'
           value={model.username}
-          label='Введите ваше имя'
+          label='Придумайте логин'
           isLabelHintHidden={true}
-          placeholder='Имя'
+          placeholder='Логин'
           required
+          error={model.error.username}
           maxLength={12}
           minLength={3}
-          onValue={model.handleUsernameChange}
+          onValue={model.handleValue}
         />
       )}
       <Input
-        className={styles.form_input}
+        className={styles.form__input}
         type='email'
         name='email'
         value={model.email}
-        label='Введите электронную почту'
-        labelHint={
-          isSignUp ? 'На почту придет письмо для подтверждения регистрации' : ''
+        label={
+          model.isSignUp ? 'Введите эл.почту' : 'Введите логин или эл.почту'
         }
-        isLabelHintHidden={!isSignUp}
-        placeholder='Электронная почта'
+        labelHint={model.isSignUp ? 'И получите письмо с подтверждением' : ''}
+        isLabelHintHidden={!model.isSignUp}
+        placeholder='Эл. почта'
         required
-        error={model.error}
-        onValue={model.handleEmailChange}
+        error={model.error.email}
+        onValue={model.handleValue}
         maxLength={30}
         minLength={5}
       />
       <Input
-        className={styles.form_input}
+        className={styles.form__input}
         type='password'
         name='password'
         value={model.password}
-        label={isSignUp ? 'Придумайте пароль' : 'Введите пароль'}
-        labelHint={isSignUp ? 'Не менее 6 символов, латинскими буквами' : ''}
-        isLabelHintHidden={!isSignUp}
+        label={model.isSignUp ? 'Придумайте пароль' : 'Введите пароль'}
+        labelHint={
+          model.isSignUp ? 'Не менее 5 символов, латинскими буквами' : ''
+        }
+        isLabelHintHidden={!model.isSignUp}
         placeholder='Пароль'
         required
-        error={model.error}
-        onValue={model.handlePasswordChange}
+        error={model.error.password}
+        onValue={model.handleValue}
         maxLength={12}
         minLength={5}
       />
-      {isSignUp && (
+      {model.isSignUp && (
         <Input
-          className={styles.form_input}
+          className={styles.form__input}
           type='password'
           name='confirmPassword'
           value={model.confirmPassword}
@@ -120,49 +117,39 @@ const SignupSigninForm = () => {
           isLabelHintHidden={true}
           placeholder='Пароль'
           required
-          error={model.error}
-          onValue={model.handleConfirmPasswordChange}
+          error={model.error.confirmPassword}
+          onValue={model.handleValue}
           maxLength={12}
           minLength={5}
         />
       )}
-      <div className={styles.form_textTag}>
-        {isSignUp && (
-          <label className={styles.form_checkbox}>
+      {model.isSignUp && (
+        <p className={styles.form__text_grey12}>
+          Нажимая на кнопку «Продолжить», вы соглашаетесь с&nbsp;
+          <span className={styles.form__text_grey12_underline}>
+            Условиями пользования Сервисом
+          </span>
+        </p>
+      )}
+      <div className={styles.form__textTag}>
+        {!model.isSignUp && (
+          <label
+            className={cn(styles.form__checkbox, styles.form__text_violet14)}
+          >
             <input
               className={cn(
-                styles.form_checkbox_input,
-                styles.form_checkbox_input_signUp,
-              )}
-              type='checkbox'
-              required
-            />
-            <span className={styles.form_checkbox_visible}></span>
-            <span className={styles.form_checkbox_span_text}>
-              Продолжая, вы соглашаетесь с
-              <span className={styles.form_checkbox_span_text_underline}>
-                {' '}
-                Условиями пользования Сервисом
-              </span>
-            </span>
-          </label>
-        )}
-        {!isSignUp && (
-          <label className={styles.form_checkbox}>
-            <input
-              className={cn(
-                styles.form_checkbox_input,
-                styles.form_checkbox_input_signIn,
+                styles.form__checkbox_input,
+                styles.form__checkbox_input_signIn,
               )}
               type='checkbox'
             />
-            <span className={styles.form_checkbox_visible}></span>
+            <span className={styles.form__checkbox_visible}></span>
             Запомнить меня
           </label>
         )}
-        {!isSignUp && (
+        {!model.isSignUp && (
           <a
-            className={styles.form_forgotLink}
+            className={styles.form__forgotLink}
             href='src/components/UI/SignInForm#'
           >
             Не помню пароль
@@ -170,15 +157,23 @@ const SignupSigninForm = () => {
         )}
       </div>
       <Button
-        className={cn(
-          styles.form_button,
-          isSignUp ? styles.form_button_signUp : styles.form_button_signIn,
-        )}
+        className={cn(styles.form__button, styles.form__button_submit)}
         type='submit'
         variant='primary'
         disabled={model.isLoading}
       >
-        {model.isLoading ? 'Loading' : isSignUp ? 'Продолжить' : 'Войти'}
+        {model.isLoading ? 'Loading' : model.isSignUp ? 'Продолжить' : 'Войти'}
+      </Button>
+      <p className={cn(styles.form__text_or, styles.form__text_violet14)}>
+        или
+      </p>
+      <Button
+        className={cn(styles.form__button, styles.form__button_yandex)}
+        type='submit'
+        variant='transparent'
+        disabled={model.isLoading}
+      >
+        {model.isLoading ? 'Loading' : 'Войти с Яндекс ID'}
       </Button>
     </form>
   );

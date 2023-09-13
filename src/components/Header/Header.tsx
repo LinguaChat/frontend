@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router';
 import { useNavigate, Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -10,54 +10,24 @@ import logo from '../../images/svg/logo.svg';
 import bell from '../../images/svg/header-bell.svg';
 import bubble from '../../images/20px.png';
 import k from '../../images/headerK.png';
-import cn from 'classnames';
-import { loggedIn } from '../../models/LoggedIn';
 
-const Header = observer(() => {
+import { session } from '../../models/session/Session';
+
+const Header = () => {
   const model = useModel();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [isAaa, setAaa] = useState(false);
 
   const checkIsSignUp = () => {
     setMenuOpen(!isMenuOpen);
   };
 
   const checkLogout = () => {
-    localStorage.clear();
-    setMenuOpen(!isMenuOpen);
-    loggedIn.setLoggedInFalse();
-    model.error = '';
-    model.message = '';
-    model.username = '';
-    model.email = '';
-    model.password = '';
-    model.confirmPassword = '';
-    model.isModalOpen = false;
-    model.user = {};
-    if (location.pathname !== '/') {
-      navigate('/');
-    }
+    session.signOut();
+    navigate('/');
   };
-
-  useEffect(() => {
-    model.getCurrentUser();
-  }, [loggedIn.loggedIn]);
-
-  useEffect(() => {
-    setAaa(loggedIn.loggedIn);
-  }, [loggedIn.loggedIn]);
-
-  useEffect(() => {
-    console.log('header next try');
-    console.log(isAaa);
-  }, [isAaa]);
-
-  useEffect(() => {
-    console.log('header');
-    console.log(loggedIn.loggedIn);
-  }, [loggedIn.loggedIn]);
 
   return (
     <header className={styles.header}>
@@ -67,7 +37,13 @@ const Header = observer(() => {
         </Link>
         {location.pathname !== '/signup' &&
           location.pathname !== '/signin' &&
-          !loggedIn.loggedIn && (
+          location.pathname !== '/fill-out-1' &&
+          location.pathname !== '/fill-out-2' &&
+          location.pathname !== '/fill-out-3' &&
+          location.pathname !== '/fill-out-4' &&
+          location.pathname !== '/fill-out-5' &&
+          location.pathname !== '/fill-out-6' &&
+          !session.isAuthenticated && (
             <div className={styles.header__buttonContainer}>
               <Button
                 className={styles.button}
@@ -91,7 +67,13 @@ const Header = observer(() => {
           )}
         {location.pathname !== '/signup' &&
           location.pathname !== '/signin' &&
-          loggedIn.loggedIn && (
+          location.pathname !== '/fill-out-1' &&
+          location.pathname !== '/fill-out-2' &&
+          location.pathname !== '/fill-out-3' &&
+          location.pathname !== '/fill-out-4' &&
+          location.pathname !== '/fill-out-5' &&
+          location.pathname !== '/fill-out-6' &&
+          session.isAuthenticated && (
             <div className={styles.header__iconsContainer}>
               <Link to={`/chats`} className={styles.header__link}>
                 <img
@@ -137,6 +119,6 @@ const Header = observer(() => {
       </div>
     </header>
   );
-});
+};
 
-export default Header;
+export default observer(Header);
