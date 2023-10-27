@@ -289,7 +289,7 @@ export interface PatchedUserProfileRequest {
    */
   first_name?: string;
   /** @format binary */
-  avatar?: File | null;
+  avatar?: string | null;
   /**
    * Название
    * Наименование
