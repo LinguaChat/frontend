@@ -46,7 +46,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "*",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/compose-function": "^0.0.30",
     "css-loader": "^6.8.1",
     "eslint-config-prettier": "^9.0.0",
