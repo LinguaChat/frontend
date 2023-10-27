@@ -1,7 +1,7 @@
 import { Api } from './openapi';
 
 export const apiConfig = {
-  baseUrl: 'https://linguachat-5tzn.onrender.com/',
+  baseUrl: 'https://linguachat-5tzn.onrender.com',
 };
 
 export const api = new Api(apiConfig);
