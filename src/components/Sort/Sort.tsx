@@ -11,8 +11,8 @@ import { Country, Language, SkillLevelEnum } from '../../utils/openapi';
 
 interface Filters {
   country: string;
-  languages: string;
-  skill_level: string;
+  languages: string[];
+  skill_levels: string[];
   gender: string | null;
   age: string;
 }
@@ -63,11 +63,16 @@ const Sort: React.FC<SortProps> = ({ onChangeSort, isOpen }) => {
       .filter((country) => country.code !== null)
       .map((country) => country.code!.toUpperCase())
       .join(',');
+
+    const languages = languageFilters.map((filter) => filter.language);
+    const skillLevels = languageFilters.map((filter) => filter.skill_level);
+
     const filters: Filters = {
       age: ageRange,
       country: countryCodes,
       gender: selectedGender || null,
-      languages: languageFilters,
+      languages: languages, // Явно указываем тип для languages
+      skill_levels: skillLevels, // Явно указываем тип для skill_levels
     };
     onChangeSort(filters);
   };
